@@ -36,7 +36,7 @@ class WyyMusic():
 
     def get_formdata(self,p1):
         """获取加密参数，虽然只是调用前端js，但也是程序的核心（而且很多信息都用了encText,encSecKey这两个参数，构造方法完全一样）"""
-        with open('js_content.js', 'r', encoding='utf-8') as f:  # 读取js文件
+        with open('function.js', 'r', encoding='utf-8') as f:  # 读取js文件
             js_file = f.read()
         js = execjs.compile(js_file)                             # 编译js代码
         res = js.call('d', p1, self.p2, self.p3, self.p4)        # 获取编译后的对象，里面有我们想要的参数
@@ -48,20 +48,20 @@ class WyyMusic():
         }
         return data
 
-    def get_lyrics(self,id):
-        url = 'https://music.163.com/weapi/song/lyric?csrf_token='
-        p1 = {"id":"{}".format(id),"lv":-1,"tv":-1,"csrf_token":""}
-        p1 = str(p1)
-        res = requests.post(url, headers=self.headers, data=WyyMusic.get_formdata(self, p1))
-        lrc = res.json()['lrc']['lyric']
-        lrc = re.sub(r'[(\d)|(:)|(.)*?]','  ',lrc)
-        lrc = re.findall('](.*?)\n',lrc,re.S)
-        f = open('1.txt','w',encoding='utf-8')
-        for x in lrc:
-            if x!='':
-                f.write(x)
-                f.write('\n')
-        return lrc
+    # def get_lyrics(self,id):
+    #     url = 'https://music.163.com/weapi/song/lyric?csrf_token='
+    #     p1 = {"id":"{}".format(id),"lv":-1,"tv":-1,"csrf_token":""}
+    #     p1 = str(p1)
+    #     res = requests.post(url, headers=self.headers, data=WyyMusic.get_formdata(self, p1))
+    #     lrc = res.json()['lrc']['lyric']
+    #     lrc = re.sub(r'[(\d)|(:)|(.)*?]','  ',lrc)
+    #     lrc = re.findall('](.*?)\n',lrc,re.S)
+    #     f = open('1.txt','w',encoding='utf-8')
+    #     for x in lrc:
+    #         if x!='':
+    #             f.write(x)
+    #             f.write('\n')
+    #     return lrc
 
     def get_song(self, id):
         """获取音乐链接"""
@@ -70,18 +70,23 @@ class WyyMusic():
         p1 = str(p1)
         res = requests.post(url, headers=self.headers, data=WyyMusic.get_formdata(self,p1))
         res_dict = res.json()  # 获取返回的json文件
-        song_link = res_dict['data'][0]['url']
-        song = requests.get(song_link,headers=self.headers).content
-        return song
+        try:
+            song_link = res_dict['data'][0]['url']
+            return song_link
+        except:
+            pass
+        # song = requests.get(song_link,headers=self.headers).content
+
 
 if __name__ == '__main__':
-    # print('输入要查询的音乐名：',end='')
-    # q = input()
-    a = WyyMusic('{}'.format('再飞行'))
+    print('输入要查询的音乐名：',end='')
+    q = input()
+    a = WyyMusic('{}'.format(q))
     names = a.get_info()
     # id = a.get_info()
-    id = a.get_info()[2][0]
+    id = a.get_info()[2]
     # print(a.get_info()[0])
-    b = a.get_lyrics(id)
-    print(id)
-    print(b)
+    for i in id:
+        b = a.get_song(i)
+        print(i)
+        print(b)
