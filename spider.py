@@ -82,11 +82,16 @@ if __name__ == '__main__':
     print('输入要查询的音乐名：',end='')
     q = input()
     a = WyyMusic('{}'.format(q))
-    names = a.get_info()
+    names = a.get_info()[0]
     # id = a.get_info()
     id = a.get_info()[2]
+    songer = a.get_info()[1]
     # print(a.get_info()[0])
-    for i in id:
-        b = a.get_song(i)
-        print(i)
-        print(b)
+    # for i in id:
+    #     b = a.get_song(i)
+    #     print(i)
+    #     print(b)
+    for x in range(0,len(id)):
+        i=id[x]
+        b=a.get_song(i)
+        print(a.get_info()[0][x],a.get_info()[1][x],b)
